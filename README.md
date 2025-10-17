@@ -4,24 +4,22 @@ Analyze e-commerce transactions using SQL to discover sales trends, customer beh
 
 
 ## 🛒 Introduction
-> Khi thị trường điện thoại bùng nổ, nhóm phân tích nhận ra rằng dữ liệu giao dịch ẩn chứa vô số câu chuyện thú vị: ai đang mua, họ mua gì, ở đâu và vì sao lại chọn hình thức trả góp hay mua thêm phụ kiện.
-> 
-> Vì vậy, Hương đã khởi động một project mới – “Phone Data Insight” – nhằm khai phá dữ liệu bán hàng và giúp doanh nghiệp hiểu rõ khách hàng hơn bao giờ hết.
->
-> Mục tiêu của dự án là theo dõi xu hướng mua sắm, đo lường doanh thu và phát hiện những hành vi tiềm năng để từ đó giúp doanh nghiệp dự báo nhu cầu, tối ưu chiến lược bán hàng và phát triển bền vững trong tương lai.
 
 ## 📂 Dataset
 The eCommerce dataset is publicly hosted on Google BigQuery. You can connect and explore it directly without downloading any files.
 1. Log in to your [Google Cloud Console](https://console.cloud.google.com/)
 2. Open BigQuery and select your working project.
-3. In the navigation panel, choose **Add Data** → Search a project
+3. In the navigation panel, choose **Add Data** → Search a **project**
    
-   `bigquery-public-data.google_analytics_sample.ga_sessions_`
+  **`bigquery-public-data.google_analytics_sample.ga_sessions_`**
+  
 4. You can now write SQL queries directly in the BigQuery Editor.
 ### `ga_sessions`
 <details>
 <summary> View Description Table </summary>
-  
+   
+Since the `ga_sessions` table contains a large number of fields, this project focuses only on the following key variables that are most relevant to project.
+   
 | Field Name | Data Type | Description |
 |-------------|------------|-------------|
 | `fullVisitorId` | STRING | The unique visitor ID. |
