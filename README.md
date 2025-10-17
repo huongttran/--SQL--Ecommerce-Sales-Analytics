@@ -1,10 +1,75 @@
 # [SQL] Ecommerce Sales Analytics
 Analyze e-commerce transactions using SQL to discover sales trends, customer behavior, and product performance insights for better business decisions.
 ## 📕 Table Of Contents
+- 🛒 [Introduction](#-introduction)
+- 📂 [Dataset](#-dataset)
+- 🎯 [Case Study Questions](#-case-study-questions)
+- 🐳 [Solutions](#-solutions)
+- 📢 [Notes](#-notes)
 
+## 📢 Notes
+### Note 1: Nested Data Structure
 
+The `ga_sessions_*` table in Google Analytics has a nested and repeated structure:
+
+- Each **session **contains multiple **hits**→ `hits[]`
+
+- Each **hit** may contain multiple **products** → `hits.product[]`
+
+When querying, you need to “flatten” the data using:
+
+>FROM ... ,
+>
+>UNNEST(hits), 
+>
+> UNNEST(hits.product)
+
+→ Each product inside a single session will be expanded into multiple rows.
+
+⚠️ To **avoid data duplication**, only keep records with actual transactions: `WHERE product.productRevenue IS NOT NULL`
+
+---
+### Note 2: Revenue Units and Values (applies to Q3, Q6)
+
+The field `product.productRevenue` is stored in micro-units (×10⁶).
+👉 You must **divide** it by **1,000,000** to convert it to the original currency unit:
+
+---
+### Note 3: Action Type Classification
+Trường `hits.eCommerceAction.action_type` mô tả hành động thương mại điện tử mà người dùng thực hiện trong mỗi hit (lượt tương tác) của một phiên truy cập (session).
+Dưới đây là các giá trị phổ biến:
+
+| action_type | Action Description             |
+| ------------- | ------------------------------ | 
+| `0`           | Unknown                        | 
+| `1`           | Click through of product lists |
+| `2`           | Product detail views           | 
+| `3`           | Add product(s) to cart         | 
+| `4`           | Remove product(s) from cart    | 
+| `5`           | Check out                      | 
+| `6`           | Completed purchase             |
+| `7`           | Refund of purchase             | 
+| `8`           | Checkout options               |
+
+👉 When calculating funnel ratios (view → add_to_cart → purchase):
+
+- Filter action_type = 2 for product views
+
+- Filter action_type = 3 for add-to-cart actions
+
+- Filter action_type = 6 and productRevenue IS NOT NULL for valid purchases
+
+---
+### Note 4: Purchaser vs. Non-Purchaser Filtering Conditions
+
+| Customer Group    | Filtering Condition                                                 | Description                                                |
+| ----------------- | ------------------------------------------------------------------- | ---------------------------------------------------------- |
+| **Purchaser**     | `totals.transactions >= 1` and `product.productRevenue IS NOT NULL` | The user made at least one transaction with actual revenue |
+| **Non-purchaser** | `totals.transactions IS NULL` and `product.productRevenue IS NULL`  | The user has no completed transactions or purchases        |
+
+## Problem Statement
 ## 🛒 Introduction
-
+> This project aims to explore e-commerce data in a simple and engaging way. Here, the focus is on uncovering how visitors behave, how much they spend, and what products capture their attention the most. By analyzing these patterns, the project seeks to build a deeper understanding of customer habits and inspire more personalized, data-driven decisions for a better shopping experience.
 ## 📂 Dataset
 The eCommerce dataset is publicly hosted on Google BigQuery. You can connect and explore it directly without downloading any files.
 1. Log in to your [Google Cloud Console](https://console.cloud.google.com/)
@@ -49,7 +114,7 @@ Since the `ga_sessions` table contains a large number of fields, this project fo
 7. Other products purchased by customers who purchased product "YouTube Men's Vintage Henley" in July 2017. Output should show product name and the quantity was ordered.
 8. Calculate cohort map from product view to addtocart to purchase in Jan, Feb and March 2017. For example, 100% product view then 40% add_to_cart and 10% purchase.
 
-## Solutions
+## 🐳 Solutions
 ### Q1: Calculate total visit, pageview, transaction for Jan, Feb and March 2017
 ```sql
 SELECT 
@@ -91,7 +156,7 @@ ORDER BY total_visits DESC
 | sites.google.com     | 230           | 97                  | 42.174       |
 
 ### Q3: Revenue by traffic source by week, by month in June 2017
-
+Please refer to Note 01 – UNNEST, Note 02 – product.productRevenue for the guidance relevant to this question.
 ```sql
 WITH month_rev AS (
   SELECT 
