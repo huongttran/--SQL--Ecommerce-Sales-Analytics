@@ -1,4 +1,4 @@
---Q1
+--Q1 Calculate total visit, pageview, transaction for Jan, Feb and March 2017 
 SELECT 
       FORMAT_DATE('%Y%m' , PARSE_DATE('%Y%m%d', date)) AS month, 
       COUNT(fullVisitorId) AS total,
@@ -11,7 +11,7 @@ ORDER BY month;
 
 
 
---Q2
+--Q2 Bounce rate per traffic source in July 2017 
 SELECT trafficSource.`source`, 
         SUM (totals.visits) AS total_visits,
         SUM (totals.bounces) AS total_no_of_bounces,
@@ -22,7 +22,7 @@ ORDER BY total_visits DESC
 
 
 
---Q3
+--Q3 Revenue by traffic source by week, by month in June 2017
 WITH month_rev AS (
   SELECT 
       'Month' AS time_type,
@@ -59,7 +59,7 @@ ORDER BY revenue DESC
 
 
 
---Q4
+--Q4 Average number of page views by purchaser type (purchasers vs non-purchasers) in June, July 2017
 WITH Purchaser AS (
   SELECT
       FORMAT_DATE('%Y%m' , PARSE_DATE('%Y%m%d', date)) AS month,
@@ -97,7 +97,7 @@ ORDER BY month
 
 
 
---Q5
+--Q5 Average number of transactions per user that made a purchase in July 2017
 SELECT
       FORMAT_DATE('%Y%m' , PARSE_DATE('%Y%m%d', date)) AS month,
       ROUND(SUM(totals.transactions) / COUNT (DISTINCT fullVisitorId),4) AS avg_pageviews_purchase,
@@ -111,7 +111,7 @@ GROUP BY month
 
 
 
---Q6
+--Q6 Average amount of money spent per session. Only include purchaser data in July 2017
 With product_data as (
   SELECT
       FORMAT_DATE('%Y%m' , PARSE_DATE('%Y%m%d', date)) AS month,
@@ -132,7 +132,7 @@ FROM product_data
 
 
 
---Q7
+--Q7 Other products purchased by customers who purchased product "YouTube Men's Vintage Henley" in July 2017. Output should show product name and the quantity was ordered
 WITH ID AS(
   SELECT DISTINCT fullVisitorId AS ID_name
   FROM 
@@ -160,7 +160,7 @@ ORDER BY quantity DESC
 
 
 
---Q8
+--Q8 Calculate cohort map from product view to addtocart to purchase in Jan, Feb and March 2017. For example, 100% product view then 40% add_to_cart and 10% purchase
 WITH ViewProduct AS (
   SELECT
     FORMAT_DATE('%Y%m', PARSE_DATE('%Y%m%d', date)) AS month,
@@ -213,3 +213,4 @@ USING(month)
 LEFT JOIN Purchase
 USING(month)
 ORDER BY month;
+
