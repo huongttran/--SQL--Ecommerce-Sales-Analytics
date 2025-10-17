@@ -156,7 +156,9 @@ ORDER BY total_visits DESC
 | sites.google.com     | 230           | 97                  | 42.174       |
 
 ### Q3: Revenue by traffic source by week, by month in June 2017
-Please refer to Note 01 – UNNEST, Note 02 – product.productRevenue for the guidance relevant to this question.
+
+> ⚠️ Please refer to **[here](#-notes)** for the guidance relevant to this question.
+
 ```sql
 WITH month_rev AS (
   SELECT 
