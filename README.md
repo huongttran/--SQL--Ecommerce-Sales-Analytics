@@ -1,5 +1,5 @@
 # [SQL] Ecommerce Sales Analytics
-Analyze e-commerce transactions using SQL to discover sales trends, customer behavior, and product performance insights for better business decisions.
+
 ## 📕 Table Of Contents
 - 🛒 [Introduction](#-introduction)
 - 📂 [Dataset](#-dataset)
@@ -7,67 +7,6 @@ Analyze e-commerce transactions using SQL to discover sales trends, customer beh
 - 🐳 [Solutions](#-solutions)
 - 📢 [Notes](#-notes)
 
-## 📢 Notes
-### Note 1: Nested Data Structure
-
-The `ga_sessions_*` table in Google Analytics has a nested and repeated structure:
-
-- Each **session **contains multiple **hits**→ `hits[]`
-
-- Each **hit** may contain multiple **products** → `hits.product[]`
-
-When querying, you need to “flatten” the data using:
-
->FROM ... ,
->
->UNNEST(hits), 
->
-> UNNEST(hits.product)
-
-→ Each product inside a single session will be expanded into multiple rows.
-
-⚠️ To **avoid data duplication**, only keep records with actual transactions: `WHERE product.productRevenue IS NOT NULL`
-
----
-### Note 2: Revenue Units and Values (applies to Q3, Q6)
-
-The field `product.productRevenue` is stored in micro-units (×10⁶).
-👉 You must **divide** it by **1,000,000** to convert it to the original currency unit:
-
----
-### Note 3: Action Type Classification
-Trường `hits.eCommerceAction.action_type` mô tả hành động thương mại điện tử mà người dùng thực hiện trong mỗi hit (lượt tương tác) của một phiên truy cập (session).
-Dưới đây là các giá trị phổ biến:
-
-| action_type | Action Description             |
-| ------------- | ------------------------------ | 
-| `0`           | Unknown                        | 
-| `1`           | Click through of product lists |
-| `2`           | Product detail views           | 
-| `3`           | Add product(s) to cart         | 
-| `4`           | Remove product(s) from cart    | 
-| `5`           | Check out                      | 
-| `6`           | Completed purchase             |
-| `7`           | Refund of purchase             | 
-| `8`           | Checkout options               |
-
-👉 When calculating funnel ratios (view → add_to_cart → purchase):
-
-- Filter action_type = 2 for product views
-
-- Filter action_type = 3 for add-to-cart actions
-
-- Filter action_type = 6 and productRevenue IS NOT NULL for valid purchases
-
----
-### Note 4: Purchaser vs. Non-Purchaser Filtering Conditions
-
-| Customer Group    | Filtering Condition                                                 | Description                                                |
-| ----------------- | ------------------------------------------------------------------- | ---------------------------------------------------------- |
-| **Purchaser**     | `totals.transactions >= 1` and `product.productRevenue IS NOT NULL` | The user made at least one transaction with actual revenue |
-| **Non-purchaser** | `totals.transactions IS NULL` and `product.productRevenue IS NULL`  | The user has no completed transactions or purchases        |
-
-## Problem Statement
 ## 🛒 Introduction
 > This project aims to explore e-commerce data in a simple and engaging way. Here, the focus is on uncovering how visitors behave, how much they spend, and what products capture their attention the most. By analyzing these patterns, the project seeks to build a deeper understanding of customer habits and inspire more personalized, data-driven decisions for a better shopping experience.
 ## 📂 Dataset
@@ -209,6 +148,8 @@ ORDER BY revenue DESC
 
 ### Q4: Average number of page views by purchaser type (purchasers vs non-purchasers) in June, July 2017.
 
+> ⚠️ Please refer to **[here](#-notes)** for the guidance relevant to this question.
+
 ```sql
 WITH Purchaser AS (
   SELECT
@@ -251,6 +192,9 @@ ORDER BY month
 | 201707 | 124.24                 | 334.06                      |
 
 ### Q5: Average number of transactions per user that made a purchase in July 2017
+
+> ⚠️ Please refer to **[here](#-notes)** for the guidance relevant to this question.
+
 ```sql
 SELECT
       FORMAT_DATE('%Y%m' , PARSE_DATE('%Y%m%d', date)) AS month,
@@ -269,6 +213,9 @@ GROUP BY month
 
 
 ### Q6: Average amount of money spent per session. Only include purchaser data in July 2017
+
+> ⚠️ Please refer to **[here](#-notes)** for the guidance relevant to this question.
+
 ```sql
 With product_data as (
   SELECT
@@ -294,6 +241,8 @@ FROM product_data
 
 
 ### Q7: Other products purchased by customers who purchased product "YouTube Men's Vintage Henley" in July 2017. Output should show product name and the quantity was ordered.
+
+> ⚠️ Please refer to **[here](#-notes)** for the guidance relevant to this question.
 
 ```sql
 WITH ID AS(
@@ -335,6 +284,9 @@ ORDER BY quantity DESC
 
 
 ### Q8: Calculate cohort map from product view to addtocart to purchase in Jan, Feb and March 2017. For example, 100% product view then 40% add_to_cart and 10% purchase. 
+
+> ⚠️ Please refer to **[here](#-notes)** for the guidance relevant to this question.
+
 ```sql
 WITH ViewProduct AS (
   SELECT
@@ -394,3 +346,76 @@ ORDER BY month;
 | 201701 | 25787            | 7342          | 2143          | 28.47            | 8.31           |
 | 201702 | 21489            | 7360          | 2060          | 34.25            | 9.59           |
 | 201703 | 23549            | 8782          | 2977          | 37.29            | 12.64          |
+
+
+## 📢 Notes
+### Note 1: Nested Data Structure 
+
+*(applies to Q3 → Q7, Q10)*
+
+The `ga_sessions_*` table in Google Analytics has a nested and repeated structure:
+
+- Each **session **contains multiple **hits**→ `hits[]`
+
+- Each **hit** may contain multiple **products** → `hits.product[]`
+
+When querying, you need to “flatten” the data using:
+
+>FROM ... ,
+>
+>UNNEST(hits), 
+>
+> UNNEST(hits.product)
+
+→ Each product inside a single session will be expanded into multiple rows.
+
+⚠️ To **avoid data duplication**, only keep records with actual transactions: `WHERE product.productRevenue IS NOT NULL`
+
+---
+### Note 2: Revenue Units and Values 
+
+*(applies to Q3, Q6)*
+
+The field **`product.productRevenue`** is stored in micro-units (×10⁶).
+👉 You must **divide** it by **1,000,000** to convert it to the original currency unit:
+
+---
+### Note 3: Action Type Classification
+
+*(applies to Q8)*
+
+The field **`hits.eCommerceAction.action_type`** describes the **e-commerce action** performed by the user in each *hit* (interaction) within a browsing session.
+Below are the most common values:
+
+| action_type | Action Description             |
+| ------------- | ------------------------------ | 
+| `0`           | Unknown                        | 
+| `1`           | Click through of product lists |
+| `2`           | Product detail views           | 
+| `3`           | Add product(s) to cart         | 
+| `4`           | Remove product(s) from cart    | 
+| `5`           | Check out                      | 
+| `6`           | Completed purchase             |
+| `7`           | Refund of purchase             | 
+| `8`           | Checkout options               |
+
+👉 When calculating funnel ratios (view → add_to_cart → purchase):
+
+- Filter `action_type` = 2 for product views
+
+- Filter `action_type` = 3 for add-to-cart actions
+
+- Filter `action_type` = 6 and productRevenue IS NOT NULL for valid purchases
+
+---
+### Note 4: Purchaser vs. Non-Purchaser Filtering Conditions
+
+*(applies to Q4–Q7)*
+
+| Customer Group    | Filtering Condition                                                 | Description                                                |
+| ----------------- | ------------------------------------------------------------------- | ---------------------------------------------------------- |
+| **Purchaser**     | `totals.transactions >= 1` and `product.productRevenue IS NOT NULL` | The user made at least one transaction with actual revenue |
+| **Non-purchaser** | `totals.transactions IS NULL` and `product.productRevenue IS NULL`  | The user has no completed transactions or purchases        |
+
+<p>&copy; 2025 Huong Tran</p>
+
