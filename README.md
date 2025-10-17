@@ -14,7 +14,9 @@ Analyze e-commerce transactions using SQL to discover sales trends, customer beh
 The eCommerce dataset is publicly hosted on Google BigQuery. You can connect and explore it directly without downloading any files.
 1. Log in to your [Google Cloud Console](https://console.cloud.google.com/)
 2. Open BigQuery and select your working project.
-3. In the navigation panel, choose **Add Data** → Search a project **bigquery-public-data.google_analytics_sample.ga_sessions_**
+3. In the navigation panel, choose **Add Data** → Search a project
+   
+   `bigquery-public-data.google_analytics_sample.ga_sessions_`
 4. You can now write SQL queries directly in the BigQuery Editor.
 ### `ga_sessions`
 <details>
